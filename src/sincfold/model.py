@@ -164,7 +164,7 @@ class SincFold(nn.Module):
             nn.BatchNorm3d(16),
         )
         self.decoder = nn.Sequential(
-            nn.ConvTranspose1d(in_channels=16, out_channels=1, kernel_size=5, padding=2),
+            nn.Conv3d(in_channels=16, out_channels=1, kernel_size=5, padding=2),
             nn.ReLU(),
             nn.BatchNorm3d(1),
         )

@@ -157,6 +157,18 @@ class SincFold(nn.Module):
             kernel_size=kernel_resnet2d,
             padding="same",
         )
+        
+        self.encoder = nn.Sequential(
+            nn.Conv3d(in_channels=1, out_channels=16, kernel_size=5, padding=2),
+            nn.ReLU(),
+            nn.BatchNorm3d(16),
+        )
+        self.decoder = nn.Sequential(
+            nn.ConvTranspose1d(in_channels=16, out_channels=1, kernel_size=5, padding=2),
+            nn.ReLU(),
+            nn.BatchNorm3d(1),
+        )
+        
 
     def forward(self, batch):
         x = batch["embedding"].to(self.device)
@@ -190,7 +202,11 @@ class SincFold(nn.Module):
             y = y.multiply(batch["canonical_mask"].to(self.device))
         yt = tr.transpose(y, -1, -2)
         y = (y + yt) / 2
-
+        y = self.encoder(y)
+        y = self.decoder(y)
+        
+        
+        
         return y, y0
 
     def loss_func(self, yhat, y):
